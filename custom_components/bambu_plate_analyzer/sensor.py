@@ -128,7 +128,28 @@ class BambuPlateAnalyzerSensor(SensorEntity):
             "image_width": self._image_width,
             "image_height": self._image_height,
             "objects": self._objects,
+            "bbox_data": self._bbox_data_serialized,
         }
+
+    @property
+    def _bbox_data_serialized(self) -> str:
+        """Serialize bbox data for ESPHome consumption.
+
+        Format: ID:name:min_x,min_y,max_x,max_y|...
+        """
+        if not self._objects:
+            return ""
+        parts = []
+        for identify_id, obj_data in self._objects.items():
+            name = obj_data.get("name", "")
+            bbox = obj_data.get("bbox")
+            if bbox:
+                parts.append(
+                    f"{identify_id}:{name}:{bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]}"
+                )
+            else:
+                parts.append(f"{identify_id}:{name}:")
+        return "|".join(parts)
 
     async def async_added_to_hass(self) -> None:
         """Resolve entity IDs and subscribe to changes."""
