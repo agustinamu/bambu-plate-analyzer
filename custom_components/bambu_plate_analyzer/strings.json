@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Bambu Plate Analyzer",
+        "description": "Enter the serial number of your Bambu Lab printer. This is used to find the corresponding entities from the Bambu Lab integration.",
+        "data": {
+          "serial": "Printer serial number"
+        }
+      }
+    },
+    "error": {
+      "entities_not_found": "Could not find Bambu Lab entities for this serial number. Make sure the Bambu Lab integration is configured."
+    },
+    "abort": {
+      "already_configured": "This printer is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "plate_analyzer": {
+        "name": "Plate Analyzer"
+      }
+    }
+  }
+}

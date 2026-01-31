@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Bambu Plate Analyzer",
+        "description": "Ingresa el número de serie de tu impresora Bambu Lab. Se usa para encontrar las entidades correspondientes de la integración Bambu Lab.",
+        "data": {
+          "serial": "Número de serie de la impresora"
+        }
+      }
+    },
+    "error": {
+      "entities_not_found": "No se encontraron entidades de Bambu Lab para este número de serie. Asegúrate de que la integración Bambu Lab esté configurada."
+    },
+    "abort": {
+      "already_configured": "Esta impresora ya está configurada."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "plate_analyzer": {
+        "name": "Analizador de plato"
+      }
+    }
+  }
+}
