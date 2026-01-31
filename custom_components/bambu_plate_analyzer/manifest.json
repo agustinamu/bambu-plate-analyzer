@@ -5,7 +5,7 @@
   "config_flow": true,
   "dependencies": ["image"],
   "after_dependencies": ["bambu_lab"],
-  "documentation": "https://github.com/YOUR_USERNAME/bambu-plate-analyzer",
+  "documentation": "https://github.com/agustinamu/bambu-plate-analyzer",
   "iot_class": "local_push",
   "requirements": ["Pillow>=10.0.0"],
   "version": "1.0.0"
