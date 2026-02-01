@@ -21,6 +21,11 @@
       "plate_analyzer": {
         "name": "Plate Analyzer"
       }
+    },
+    "image": {
+      "plate_image": {
+        "name": "Pick Image"
+      }
     }
   }
 }

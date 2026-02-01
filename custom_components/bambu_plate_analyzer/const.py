@@ -4,4 +4,4 @@ DOMAIN = "bambu_plate_analyzer"
 
 CONF_SERIAL = "serial"
 
-PLATFORMS = ["sensor"]
+PLATFORMS = ["sensor", "image"]

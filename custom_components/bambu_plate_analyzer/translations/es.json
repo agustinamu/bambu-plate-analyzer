@@ -21,6 +21,11 @@
       "plate_analyzer": {
         "name": "Analizador de plato"
       }
+    },
+    "image": {
+      "plate_image": {
+        "name": "Seleccionar imagen"
+      }
     }
   }
 }

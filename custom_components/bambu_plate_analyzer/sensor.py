@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timezone
 from io import BytesIO
 from typing import Any
 
@@ -15,7 +16,7 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 
-from .const import CONF_SERIAL
+from .const import CONF_SERIAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -72,6 +73,21 @@ def compute_bounding_boxes(image_bytes: bytes) -> dict[str, Any]:
         "image_height": image_height,
         "bboxes": bboxes,
     }
+
+
+def convert_to_jpeg(image_bytes: bytes, quality: int = 80) -> bytes:
+    """Convert image bytes to JPEG format."""
+    image = Image.open(BytesIO(image_bytes))
+    if image.mode == "RGBA":
+        # JPEG doesn't support alpha; composite onto black background
+        bg = Image.new("RGB", image.size, (0, 0, 0))
+        bg.paste(image, mask=image.split()[3])
+        image = bg
+    elif image.mode != "RGB":
+        image = image.convert("RGB")
+    buf = BytesIO()
+    image.save(buf, format="JPEG", quality=quality)
+    return buf.getvalue()
 
 
 async def async_setup_entry(
@@ -297,6 +313,17 @@ class BambuPlateAnalyzerSensor(SensorEntity):
         self._objects = merged
         self._image_width = result["image_width"]
         self._image_height = result["image_height"]
+
+        # Convert pick image to JPEG and store for the image entity
+        try:
+            jpeg_bytes = await self.hass.async_add_executor_job(
+                convert_to_jpeg, image_bytes
+            )
+            entry_data = self.hass.data.get(DOMAIN, {}).get(self._entry.entry_id, {})
+            entry_data["jpeg_bytes"] = jpeg_bytes
+            entry_data["jpeg_updated"] = datetime.now(timezone.utc)
+        except Exception:
+            _LOGGER.exception("Error converting pick image to JPEG")
 
         _LOGGER.debug(
             "Plate analysis complete: %d objects, image %dx%d",
