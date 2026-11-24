@@ -7,6 +7,7 @@ from datetime import datetime
 from homeassistant.components.image import ImageEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 
@@ -55,18 +56,12 @@ class BambuPlateAnalyzerImage(ImageEntity):
 
     async def async_added_to_hass(self) -> None:
         """Subscribe to sensor state changes to know when image updates."""
-        # Find the plate_analyzer sensor entity_id for this entry
-        sensor_entity_id = None
-        for state in self.hass.states.async_all("sensor"):
-            if state.entity_id.endswith("_plate_analyzer"):
-                # Verify it belongs to our serial by checking unique_id via registry
-                from homeassistant.helpers import entity_registry as er
-
-                ent_reg = er.async_get(self.hass)
-                entry = ent_reg.async_get(state.entity_id)
-                if entry and entry.unique_id == f"{self._serial}_plate_analyzer":
-                    sensor_entity_id = state.entity_id
-                    break
+        # Localiza el sensor de esta entrada por unique_id (el entity_id depende del
+        # idioma: en español es sensor.analizador_de_plato, no *_plate_analyzer).
+        ent_reg = er.async_get(self.hass)
+        sensor_entity_id = ent_reg.async_get_entity_id(
+            "sensor", DOMAIN, f"{self._serial}_plate_analyzer"
+        )
 
         if sensor_entity_id:
             self.async_on_remove(
